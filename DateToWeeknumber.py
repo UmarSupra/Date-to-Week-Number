@@ -32,40 +32,45 @@ class DateToWeekNumber:
 
     @staticmethod
     def is_date_valid(date, number_of_days):
+        # noinspection PyBroadException
         try:
             if int(date[1]) not in range(0, 13):
                 print("The month you have entered is not valid. Please enter a month between 1 and 12.")
                 return False
-            if int(date[0]) not in range(1950, 2050):
-                print("The year entered is not in the valid range. Please enter an appropriate year in the date.")
+            if int(date[2]) not in range(0, 99):
+                print("The year entered is not in the valid range. Please ensure the year is between 00 and 99.")
                 return False
             days_in_chosen_month = int(number_of_days[date[1]])
-            if int(date[2]) not in range(0, (days_in_chosen_month + 1)):
+            if int(date[0]) not in range(0, (days_in_chosen_month + 1)):
                 print("The day entered is not valid. Please try entering another date.")
                 return False
             else:
                 return True
-        except:
+        except ValueError:
             print("Invalid date entered.")
             return False
 
     def date_verification(self):
-        if len(self.date) != 10:
-            print("The date isn't in the correct format of DD-MM-YYYY.")
+        if self.date[2] != "/" or self.date[5] != "/":
+            print("Please reenter the date in format DD/MM/YY")
             return False
-        date = self.date.split("-")
-        leap_year = self.is_leap_year(date[0])
+        try:
+            int(self.date.replace("/", ""))
+        except ValueError:
+            print("Please ensure all characters except the / are integers")
+        if len(self.date) != 8:
+            print("The date isn't in the correct format of DD/MM/YY.")
+            return False
+        date = self.date.split("/")
+        leap_year = self.is_leap_year("20" + date[2])
         number_of_days = self.days_in_month(leap_year)
         date_valid = self.is_date_valid(date, number_of_days)
         return date_valid
 
     def date_to_week_number(self):
         import datetime
-        if self.date_verification() is False:
-            print("Invalid date. please try again.")
-            return
-        date = self.date.split("-")
-        day_week_year = (datetime.date(int(date[0]), int(date[1]), int(date[2])).isocalendar())
+        date = self.date.split("/")
+        day_week_year = (datetime.date(int(date[2]), int(date[1]), int(date[0])).isocalendar())
         week_year = (str(day_week_year[1]) + "/" + str(day_week_year[0]))
         return week_year
 
@@ -73,8 +78,6 @@ class DateToWeekNumber:
         import datetime
         while True:
             self.date = input("What is the date you wish to obtain the week number for? Please enter in DD/MM/YY.")
-            self.date = self.date.split("/")
-            self.date = "20" + self.date[2] + "-" + self.date[1] + "-" + self.date[0]
             if self.date_verification() is False:
                 print("Invalid date. Please try again.")
             else:
@@ -85,4 +88,5 @@ class DateToWeekNumber:
 
 
 while True:
+    print("WARNING : This program is only meant for dates within the range of the years 20xx")
     DateToWeekNumber().week_number()
